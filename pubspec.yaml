@@ -1,0 +1,41 @@
+name: beehive
+description: A new Flutter application.
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.3
+
+  page_transition: ^1.1.5
+
+  provider: ^4.1.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: "^0.7.5"
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path_ios: "assets/icon/HidatoIOS.png"
+  image_path_android: "assets/icon/HidatoIOS.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/icon/Hidato.png"
+
+flutter:
+
+  uses-material-design: true
+
+  fonts:
+    - family: MyFlutterApp
+      fonts:
+        - asset: assets/fonts/MyFlutterApp.ttf
