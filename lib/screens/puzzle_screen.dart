@@ -47,7 +47,7 @@ class PuzzleScreen extends StatelessWidget {
             Expanded(
               child: Container(
                 child: Text(
-                  Provider.of<DifficultyManage>(context).getQuestionText(),
+                  Provider.of<DifficultyManage>(context).getDiffName(),
                       textAlign: TextAlign.center,
                 ),
               ),
@@ -67,7 +67,7 @@ class PuzzleScreen extends StatelessWidget {
                   ),
                   Container(
                     child: Text(
-                      Provider.of<EntryList>(context).retVal().toString(),
+                      Provider.of<EntryList>(context).retVal(),
                     ),
                   ),
                   Consumer<EntryList>(

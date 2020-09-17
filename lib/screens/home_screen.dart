@@ -1,9 +1,11 @@
-import 'package:beehive/screens/puzzle_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:beehive/components/my_flutter_app_icons.dart';
-import 'package:beehive/components/difficulty.dart';
+import 'package:beehive/screens/puzzle_screen.dart'; // For Navigation
+import 'package:flutter/material.dart'; // Main Flutter
+import 'package:flutter/widgets.dart'; // Main widgets
+import 'package:beehive/components/my_flutter_app_icons.dart'; // Icons
+import 'package:beehive/components/difficulty.dart'; // For Difficulty
 import 'package:provider/provider.dart';
+
+// On pressed actions to be added
 
 class HomeScreen extends StatelessWidget {
   static const String id = 'home_screen';
@@ -22,7 +24,7 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     children: <Widget>[
                       IconButton(
-                        onPressed: (){},
+                        onPressed: () {},
                         icon: Icon(MyFlutterApp.music),
                         iconSize: 30.0,
                       ),
@@ -59,7 +61,7 @@ class HomeScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 80.0),
                     child: Consumer<DifficultyManage>(
-                      builder: (context, difficultyManage, child){
+                      builder: (BuildContext context, difficultyManage, child) {
                         return IconButton(
                           onPressed: () {
                             difficultyManage.prevDiff();
@@ -73,14 +75,14 @@ class HomeScreen extends StatelessWidget {
                   Expanded(
                     child: Center(
                       child: Text(
-                        Provider.of<DifficultyManage>(context).getQuestionText(),
+                        Provider.of<DifficultyManage>(context).getDiffName(),
                       ),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 80.0),
                     child: Consumer<DifficultyManage>(
-                      builder: (context, difficultyManage, child){
+                      builder: (context, difficultyManage, child) {
                         return IconButton(
                           onPressed: () {
                             difficultyManage.nextDiff();
@@ -95,20 +97,24 @@ class HomeScreen extends StatelessWidget {
               ),
               OutlineButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, PuzzleScreen.id,);
+                  Navigator.pushNamed(
+                    context,
+                    PuzzleScreen.id,
+                  );
                 },
                 child: Text('New Game'),
                 shape: StadiumBorder(),
                 borderSide: BorderSide(width: 3),
               ),
               Consumer<DifficultyManage>(
-                builder: (context, difficultyManage, child){
+                builder: (context, difficultyManage, child) {
                   return DropdownButton<int>(
                     value: difficultyManage.getCurrentLevel(),
                     onChanged: (int newValue) {
-                        difficultyManage.setCurrentLevel(newValue);
+                      difficultyManage.setCurrentLevel(newValue);
                     },
-                    items: <int>[1,2,3,4].map<DropdownMenuItem<int>>((int value) {
+                    items: <int>[1, 2, 3, 4]
+                        .map<DropdownMenuItem<int>>((int value) {
                       return DropdownMenuItem<int>(
                         value: value,
                         child: Text(value.toString()),

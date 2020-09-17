@@ -1,3 +1,5 @@
+
+// Collection of Puzzles
 class Collection
 {
   List <List <List <int>>> _collection= [

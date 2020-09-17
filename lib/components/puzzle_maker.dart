@@ -1,89 +1,143 @@
-import 'package:beehive/components/difficulty.dart';
-import 'package:beehive/components/puzzles.dart';
+// Main Puzzle Handling File
+import 'package:beehive/components/difficulty.dart'; // For Difficulty
+import 'package:beehive/components/puzzles.dart'; // For Puzzle DB
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Entries {
-  int occupied;
-  int x;
-  int y;
-  Entries(this.occupied, this.x, this.y);
+class EntryList extends ChangeNotifier {
+  Puzzle _puzzle; // From Provider
+  int pointer = -1; // Pointer of EntryList
+  List<List<int>> _grid; // Instantaneous Grid
+  //List<List<int>> _gridTemp;
+  int length; // Length of array
+  List<int> diff = [19, 37, 61]; // No. of Elements in a certain difficulty
+  List<List<int>> entryList;
+  List<int> blocks;
 
-  int retOccupied(){
-    return occupied;
-  }
+  EntryList.x();
 
-  List<int> retCoordinates(){
-    return [x,y];
-  }
-}
+  EntryList(this._puzzle) {
+    length = diff[_puzzle.retDifficulty()];
+    _grid = _puzzle.retList();
+    makeList(_grid, diff[_puzzle.retDifficulty()]);
+    incrementPointer();
+  } // Setting list of entries
 
-class EntryList extends ChangeNotifier{
-  Puzzle _puzzle;
-  int pointer = 0;
-  List<List<int>> _grid;
-  List<Entries> _entryList;
-  List diff = [19, 37, 61];
-
-  EntryList(this._puzzle){
-    _entryList = List<Entries>(diff[_puzzle.retDifficulty()]);
-    makeEntryList(_puzzle.retList());
-  }
-
-  void makeEntryList(List<List<int>> x) {
-    _grid =
-        List.generate(x.length, (i) => List.generate(x.length, (i) => null));
-    for (int i = 0; i < x.length; ++i)
+  void makeList(List<List<int>> x, int y) {
+    entryList = List.generate(y, (i) => List(3));
+    for (int i = 0; i < x.length; ++i) {
       for (int j = 0; j < x.length; ++j) {
         if (x[i][j] != null) {
-          if (x[i][j] > 0)
-            _entryList[x[i][j] - 1] = Entries(-1, i, j);
-          else {
-            _entryList[(-1 * x[i][j]) - 1] = Entries(1, i, j);
-            _grid[i][j] = x[i][j] * -1;
+          if (x[i][j] != 0) {
+            if (x[i][j] > 0) {
+              entryList[x[i][j] - 1] = [1, i, j];
+            } else
+              entryList[-1 * x[i][j] - 1] = [-1, i, j];
+          } else {
+            blocks.add(i);
+            blocks.add(j);
           }
         }
       }
+    }
   }
 
-  int retNum(int x, int y) {
-    if (_grid[x][y] != null)
-      return _grid[x][y];
-    else
-      return -1;
+//1 in the list
+  String retNum(int x, int y) {
+    if(_grid[x][y]<0)
+    return (_grid[x][y]*-1).toString();
+    else return " ";
   }
 
   void update(int x, int y) {
-    if (_grid[x][y] != null) _grid[x][y] = pointer+1;
-  }
-
-  void incrementPointer(){
-    pointer++;
+    if (entryList[_grid[x][y].abs() - 1][0] >= 0) {
+      if (pointer != -1) {
+        if (_grid[x][y] > 0) {
+          _grid[x][y] = (pointer + 1) * -1;
+          entryList[_grid[x][y].abs() - 1] = [0, x, y];
+          incrementPointer();
+        } else if (_grid[x][y] < 0) {
+          if (entryList[_grid[x][y].abs() - 1][0] == 0) {
+            _grid[x][y] = _grid[x][y].abs();
+            entryList[_grid[x][y].abs() - 1] = [1, x, y];
+          }
+        }
+      }
+      else {
+        if (entryList[_grid[x][y].abs() - 1][0] == 0) {
+          _grid[x][y] = _grid[x][y].abs();
+          entryList[_grid[x][y].abs() - 1] = [1, x, y];
+          incrementPointer();
+        }
+      }
+    }
     notifyListeners();
   }
 
-  void decrementPointer(){
-    pointer--;
+  void incrementPointer() {
+    if (pointer < entryList.length - 1) {
+      int temp = pointer;
+      int ctr = 1;
+      while (entryList[pointer + ctr][0] <= 0) {
+        if(pointer==-1 && ctr ==entryList.length)return;
+        if (pointer + ctr == temp) {
+          pointer = -1;
+          return;
+        }
+        ctr++;
+        if (pointer + ctr > entryList.length - 1) {
+          pointer = 0;
+          ctr = 1;
+        }
+      }
+      pointer = pointer + ctr;
+    }
     notifyListeners();
   }
 
-  int retVal(){
-    return pointer+1;
+  void decrementPointer() {
+    if (pointer > 0) {
+      int temp = pointer;
+      int ctr = 1;
+      while (entryList[pointer - ctr][0] <= 0) {
+        if (pointer - ctr == temp) {
+          pointer = -1;
+          return;
+        }
+        ctr++;
+        if (pointer - ctr < 0) {
+          pointer = entryList.length - 1;
+          ctr = 1;
+        }
+      }
+      pointer = pointer - ctr;
+    }
+    notifyListeners();
   }
 
+  String retVal() {
+    if(pointer!=-1)
+    return (pointer + 1).toString();
+    else
+      return " ";
+  }
 }
 
-class Puzzle extends ChangeNotifier{
-  DifficultyManage _difficultyManage;
+// Main Puzzle from DB into Matrix
+class Puzzle extends ChangeNotifier {
+  DifficultyManage _difficultyManage; // Will be inherited from provider
   int difficulty = 0;
-  List _input;
-  List<List<int>> _output;
+  List _input; // Array from DB
+  List<List<int>> _output; // Puzzle Matrix
 
-  Puzzle(this._difficultyManage){
-    difficulty = _difficultyManage.getCurrentDiff()-1;
-    _input = Collection().retPuzzle(_difficultyManage.getCurrentDiff()-1,_difficultyManage.getCurrentLevel()-1);
+  Puzzle.x(); // Bogus constructor
+
+  Puzzle(this._difficultyManage) {
+    difficulty = _difficultyManage.getCurrentDiff() - 1;
+    _input = Collection().retPuzzle(_difficultyManage.getCurrentDiff() - 1,
+        _difficultyManage.getCurrentLevel() - 1);
     _output = makeList();
-  }
+  } // Getting input array by values from provider and setting output
 
   List<List<int>> makeList() {
     int a = 0;
@@ -102,61 +156,46 @@ class Puzzle extends ChangeNotifier{
     }
     double m = (a - 3) / 2;
     List<List<int>> x = List.generate(a, (i) => List(a));
+    // Creates a x a matrix
     for (int i = 0, ctr = 0; i < a; ++i)
       for (int j = 0; j < a; ++j) {
+        // check if its in allowed area
         if (i + j > m && i + j < (4 + (3 * m))) {
           x[i][j] = _input[ctr];
-          ctr++;
+          ctr++; // Counter of array
         }
       }
     return x;
-  }
+  } // Function for making matrix
 
   List<List<int>> retList() {
     return _output;
   }
 
-  int retDifficulty(){
+  int retDifficulty() {
     return difficulty;
   }
 }
 
-class HexPuzzle extends StatefulWidget {
+class HexPuzzle extends StatelessWidget {
   final int i;
   final int j;
   HexPuzzle(this.i, this.j);
 
   @override
-  _HexPuzzleState createState() => _HexPuzzleState();
-}
-
-class _HexPuzzleState extends State<HexPuzzle> {
-  int value=0;
-
-  void setValue(int x){
-    value= x;
-  }
-  void updated(EntryList e) {
-    setState(() {
-      e.update(widget.i, widget.j);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    setValue(Provider.of<EntryList>(context).retNum(widget.i, widget.j));
     return Consumer<EntryList>(
-      builder: (context,entryList,child){
+      builder: (BuildContext context, entryList, child) {
         return MaterialButton(
           onPressed: () {
-            updated(entryList);
+            entryList.update(i, j);
           },
           color: Colors.black12,
           minWidth: 0,
           height: 0,
           padding: EdgeInsets.zero,
           child: Text(
-            value.toString(),
+            Provider.of<EntryList>(context).retNum(i, j),
             style: TextStyle(fontSize: 25),
           ),
         );

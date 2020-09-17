@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+// Theme management Class to be made into provider
 class ThemeManage{
-  int _currentTheme=0;
+  int _currentTheme=0; // Current theme
+
+  // List of themes
   List <ThemeData> themeData=[
     ThemeData(
       scaffoldBackgroundColor: Colors.white,
