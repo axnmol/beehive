@@ -28,10 +28,16 @@ class PuzzleScreen extends StatelessWidget {
                     },
                     iconSize: 30,
                   ),
-                  IconButton(
-                    icon: Icon(Icons.refresh),
-                    onPressed: () {},
-                    iconSize: 30,
+                  Consumer<DifficultyManage>(
+                    builder: (context,difficultyManage,child) {
+                      return IconButton(
+                        icon: Icon(Icons.refresh),
+                        onPressed: () {
+                          difficultyManage.update();
+                        },
+                        iconSize: 30,
+                      );
+                    }
                   ),
                 ],
               ),

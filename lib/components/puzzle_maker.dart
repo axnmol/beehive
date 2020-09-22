@@ -3,6 +3,7 @@ import 'package:beehive/components/difficulty.dart'; // For Difficulty
 import 'package:beehive/components/puzzles.dart'; // For Puzzle DB
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+//todo each way
 
 class EntryList extends ChangeNotifier {
   Puzzle _puzzle; // From Provider
@@ -44,15 +45,40 @@ class EntryList extends ChangeNotifier {
 
 //1 in the list
   String retNum(int x, int y) {
+    //return _grid[x][y].toString();
     if(_grid[x][y]<0)
     return (_grid[x][y]*-1).toString();
     else return " ";
   }
 
+  bool isValue(int x, int y, int ptr){
+    bool res = true;
+    if(entryList[ptr][0]<1){
+      if(entryList[ptr][1]==x){
+        if((entryList[ptr][2]-y).abs()!=1)res=false;
+      }
+      else if(entryList[ptr][1]==x-1){
+        if(!(entryList[ptr][2]==y||entryList[ptr][2]==y+1))res=false;
+      }
+      else if(entryList[ptr][1]==x+1){
+        if(!(entryList[ptr][2]==y||entryList[ptr][2]==y-1))res=false;
+      }
+      else res =false;
+    }
+    return res;
+  }
+
+  bool isValid(int x, int y, int ptr){
+    bool res=true;
+    if(!(isValue(x, y, ptr+1)))res=false;
+    if(!(isValue(x, y, ptr-1)))res=false;
+    return res;
+  }
+
   void update(int x, int y) {
     if (entryList[_grid[x][y].abs() - 1][0] >= 0) {
       if (pointer != -1) {
-        if (_grid[x][y] > 0) {
+        if (_grid[x][y] > 0 && isValid(x,y,pointer)) {
           _grid[x][y] = (pointer + 1) * -1;
           entryList[_grid[x][y].abs() - 1] = [0, x, y];
           incrementPointer();

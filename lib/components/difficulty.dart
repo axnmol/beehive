@@ -30,7 +30,11 @@ class DifficultyManage extends ChangeNotifier {
       _currentDiff--;
     }
     notifyListeners();
-  } // Difficulty Decrement
+  } // Difficulty
+
+  void update(){
+    notifyListeners();
+  }
 
   String getDiffName() {
     return _difficulty[_currentDiff].name;
