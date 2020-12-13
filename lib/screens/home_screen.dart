@@ -18,7 +18,8 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              Row(
+              SizedBox(height: 30),
+              /*Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Row(
@@ -41,12 +42,14 @@ class HomeScreen extends StatelessWidget {
                     iconSize: 30.0,
                   ),
                 ],
-              ),
+              ),*/
               IconButton(
                 onPressed: () {},
                 icon: Icon(MyFlutterApp.Hidato),
-                iconSize: 250.0,
+                iconSize: 300.0,
               ),
+              Text('BEEHIVE',
+                style: Theme.of(context).textTheme.headline5,),
               SizedBox(
                 height: 10.0,
                 width: 150.0,
@@ -97,6 +100,7 @@ class HomeScreen extends StatelessWidget {
               ),
               OutlineButton(
                 onPressed: () {
+                  Provider.of<DifficultyManage>(context,listen: false).update();
                   Navigator.pushNamed(
                     context,
                     PuzzleScreen.id,
@@ -104,22 +108,31 @@ class HomeScreen extends StatelessWidget {
                 },
                 child: Text('New Game'),
                 shape: StadiumBorder(),
-                borderSide: BorderSide(width: 3),
+                borderSide: BorderSide(color: Colors.black54,width: 3),
               ),
               Consumer<DifficultyManage>(
                 builder: (context, difficultyManage, child) {
-                  return DropdownButton<int>(
-                    value: difficultyManage.getCurrentLevel(),
-                    onChanged: (int newValue) {
-                      difficultyManage.setCurrentLevel(newValue);
-                    },
-                    items: <int>[1, 2, 3, 4]
-                        .map<DropdownMenuItem<int>>((int value) {
-                      return DropdownMenuItem<int>(
-                        value: value,
-                        child: Text(value.toString()),
-                      );
-                    }).toList(),
+                  return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(
+                        color: Colors.black54,
+                           style: BorderStyle.solid, width: 3),
+                    ),
+                    child: DropdownButton<int>(
+                      value: difficultyManage.getCurrentLevel(),
+                      onChanged: (int newValue) {
+                        difficultyManage.setCurrentLevel(newValue);
+                      },
+                      items: <int>[1, 2, 3, 4]
+                          .map<DropdownMenuItem<int>>((int value) {
+                        return DropdownMenuItem<int>(
+                          value: value,
+                          child: Text(value.toString()),
+                        );
+                      }).toList(),
+                    ),
                   );
                 },
               ),
@@ -128,7 +141,7 @@ class HomeScreen extends StatelessWidget {
                 child: Text('Resume'),
                 shape: StadiumBorder(),
                 borderSide: BorderSide(width: 3),
-              ),*/
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 10.0),
                 child: IconButton(
@@ -151,7 +164,8 @@ class HomeScreen extends StatelessWidget {
                     iconSize: 30.0,
                   ),
                 ],
-              ),
+              ),*/
+              SizedBox(height: 30,)
             ],
           ),
         ),

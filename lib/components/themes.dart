@@ -32,7 +32,7 @@ class ThemeManage{
           fontSize: 25,
           fontWeight: FontWeight.w500,
         ),
-        headline6: TextStyle(
+        headline5: TextStyle(
           color: Colors.black54,
           fontSize: 25,
           fontWeight: FontWeight.w500,

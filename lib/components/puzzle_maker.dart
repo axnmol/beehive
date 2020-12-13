@@ -1,6 +1,7 @@
 // Main Puzzle Handling File
 import 'package:beehive/components/difficulty.dart'; // For Difficulty
 import 'package:beehive/components/puzzles.dart'; // For Puzzle DB
+import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 //todo each way
@@ -14,6 +15,7 @@ class EntryList extends ChangeNotifier {
   List<int> diff = [19, 37, 61]; // No. of Elements in a certain difficulty
   List<List<int>> entryList;
   List<int> blocks;
+  bool show=false;
 
   EntryList.x();
 
@@ -43,61 +45,88 @@ class EntryList extends ChangeNotifier {
     }
   }
 
-//1 in the list
-  String retNum(int x, int y) {
-    //return _grid[x][y].toString();
-    if(_grid[x][y]<0)
-    return (_grid[x][y]*-1).toString();
-    else return " ";
+  Color getColor(int x,int y){
+    Color res;
+    if (entryList[_grid[x][y].abs() - 1][0] == 0) res = Colors.white;
+
+    else if (entryList[_grid[x][y].abs() - 1][0] > 0) res = Colors.white30;
+    else res = Colors.black;
+    return res;
   }
 
-  bool isValue(int x, int y, int ptr){
+  void setShow(){
+    show = !show;
+    notifyListeners();
+  }
+
+  String retNum(int x, int y) {
+    if(show){
+      if (_grid[x][y] < 0)
+        return (_grid[x][y] * -1).toString();
+      else
+        return (_grid[x][y] * 1).toString();
+    }
+    else{
+      if (_grid[x][y] < 0)
+        return (_grid[x][y] * -1).toString();
+      else
+        return " ";
+    }
+  }
+
+  // Checking if the input value from the user is a valid option for
+  // that particular hexagon
+  bool isValue(int x, int y, int ptr) {
     bool res = true;
-    if(entryList[ptr][0]<1){
-      if(entryList[ptr][1]==x){
-        if((entryList[ptr][2]-y).abs()!=1)res=false;
-      }
-      else if(entryList[ptr][1]==x-1){
-        if(!(entryList[ptr][2]==y||entryList[ptr][2]==y+1))res=false;
-      }
-      else if(entryList[ptr][1]==x+1){
-        if(!(entryList[ptr][2]==y||entryList[ptr][2]==y-1))res=false;
-      }
-      else res =false;
+    if (entryList[ptr][0] < 1) {
+      if (entryList[ptr][1] == x) {
+        if ((entryList[ptr][2] - y).abs() != 1) res = false;
+      } else if (entryList[ptr][1] == x - 1) {
+        if (!(entryList[ptr][2] == y || entryList[ptr][2] == y + 1)) res = false;
+      } else if (entryList[ptr][1] == x + 1) {
+        if (!(entryList[ptr][2] == y || entryList[ptr][2] == y - 1)) res = false;
+      } else
+        res = false;
     }
     return res;
   }
 
-  bool isValid(int x, int y, int ptr){
-    bool res=true;
-    if(!(isValue(x, y, ptr+1)))res=false;
-    if(!(isValue(x, y, ptr-1)))res=false;
+  // Checking if ptr is a valid value for coordinates x,y
+  bool isValid(int x, int y, int ptr) {
+    bool res = true;
+    if (!(isValue(x, y, ptr + 1))) res = false;
+    if (!(isValue(x, y, ptr - 1))) res = false;
     return res;
   }
 
-  void update(int x, int y) {
+  // main update function
+  bool update(int x, int y) {
+    bool res = false;
     if (entryList[_grid[x][y].abs() - 1][0] >= 0) {
       if (pointer != -1) {
-        if (_grid[x][y] > 0 && isValid(x,y,pointer)) {
+        if (_grid[x][y] > 0 && isValid(x, y, pointer)) {
           _grid[x][y] = (pointer + 1) * -1;
           entryList[_grid[x][y].abs() - 1] = [0, x, y];
           incrementPointer();
+          res = true;
         } else if (_grid[x][y] < 0) {
           if (entryList[_grid[x][y].abs() - 1][0] == 0) {
             _grid[x][y] = _grid[x][y].abs();
             entryList[_grid[x][y].abs() - 1] = [1, x, y];
+            res = true;
           }
         }
-      }
-      else {
+      } else {
         if (entryList[_grid[x][y].abs() - 1][0] == 0) {
           _grid[x][y] = _grid[x][y].abs();
           entryList[_grid[x][y].abs() - 1] = [1, x, y];
           incrementPointer();
+          res = true;
         }
       }
     }
     notifyListeners();
+    return res;
   }
 
   void incrementPointer() {
@@ -105,7 +134,7 @@ class EntryList extends ChangeNotifier {
       int temp = pointer;
       int ctr = 1;
       while (entryList[pointer + ctr][0] <= 0) {
-        if(pointer==-1 && ctr ==entryList.length)return;
+        if (pointer == -1 && ctr == entryList.length) return;
         if (pointer + ctr == temp) {
           pointer = -1;
           return;
@@ -142,8 +171,8 @@ class EntryList extends ChangeNotifier {
   }
 
   String retVal() {
-    if(pointer!=-1)
-    return (pointer + 1).toString();
+    if (pointer != -1)
+      return (pointer + 1).toString();
     else
       return " ";
   }
@@ -160,8 +189,7 @@ class Puzzle extends ChangeNotifier {
 
   Puzzle(this._difficultyManage) {
     difficulty = _difficultyManage.getCurrentDiff() - 1;
-    _input = Collection().retPuzzle(_difficultyManage.getCurrentDiff() - 1,
-        _difficultyManage.getCurrentLevel() - 1);
+    _input = Collection().retPuzzle(_difficultyManage.getCurrentDiff() - 1, _difficultyManage.getCurrentLevel() - 1);
     _output = makeList();
   } // Getting input array by values from provider and setting output
 
@@ -203,29 +231,74 @@ class Puzzle extends ChangeNotifier {
   }
 }
 
-class HexPuzzle extends StatelessWidget {
+class HexPuzzle extends StatefulWidget {
   final int i;
   final int j;
   HexPuzzle(this.i, this.j);
 
   @override
+  _HexPuzzleState createState() => _HexPuzzleState();
+
+}
+
+class _HexPuzzleState extends State<HexPuzzle> with TickerProviderStateMixin {
+  Animation _colorAnimation;
+  AnimationController _colorAnimationController;
+  Animation _backAnimation;
+  AnimationController _backAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _backAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 50));
+    _backAnimation = ColorTween(begin: Colors.black12, end: Colors.black).animate(_backAnimationController);
+    _colorAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _colorAnimation = ColorTween(begin: Colors.black54, end: Colors.white).animate(_colorAnimationController);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _colorAnimationController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Consumer<EntryList>(
-      builder: (BuildContext context, entryList, child) {
-        return MaterialButton(
-          onPressed: () {
-            entryList.update(i, j);
-          },
-          color: Colors.black12,
-          minWidth: 0,
-          height: 0,
-          padding: EdgeInsets.zero,
-          child: Text(
-            Provider.of<EntryList>(context).retNum(i, j),
-            style: TextStyle(fontSize: 25),
-          ),
-        );
-      },
+    return AnimatedBuilder(
+      animation: _backAnimationController,
+      builder: (context, child) => Consumer<EntryList>(
+        builder: (BuildContext context, entryList, child) {
+          return AnimatedBuilder(
+            animation: _colorAnimationController,
+            builder: (context, child) => MaterialButton(
+              onPressed: () async{
+                if(entryList.show) entryList.setShow();
+                if(entryList.update(widget.i, widget.j)){_colorAnimationController.isCompleted
+                    ? await _colorAnimationController.reverse()
+                    : await _colorAnimationController.forward();
+                }
+                else {
+                  await _backAnimationController.forward();
+                  await Future.delayed(const Duration(milliseconds: 300));
+                  await _backAnimationController.reverse();
+                }
+                if(entryList.pointer==-1)Provider.of<DifficultyManage>(context,listen: false).gameDialog(context);
+              },
+              color: _backAnimation.value,
+              minWidth: 0,
+              height: 0,
+              padding: EdgeInsets.zero,
+              child: Text(
+                entryList.retNum(widget.i, widget.j),
+                style: TextStyle(
+                  fontSize: 25,
+                  color: entryList.getColor(widget.i, widget.j),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

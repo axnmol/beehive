@@ -46,6 +46,7 @@ class PuzzleScreen extends StatelessWidget {
               child: Container(
                 child: Text(
                   Provider.of<DifficultyManage>(context).getCurrentLevel().toString(),
+                      style: Theme.of(context).textTheme.headline1,
                       textAlign: TextAlign.center,
                 ),
               ),
@@ -54,6 +55,7 @@ class PuzzleScreen extends StatelessWidget {
               child: Container(
                 child: Text(
                   Provider.of<DifficultyManage>(context).getDiffName(),
+                  style: Theme.of(context).textTheme.headline4,
                       textAlign: TextAlign.center,
                 ),
               ),
@@ -74,6 +76,7 @@ class PuzzleScreen extends StatelessWidget {
                   Container(
                     child: Text(
                       Provider.of<EntryList>(context).retVal(),
+                      style: Theme.of(context).textTheme.headline4,
                     ),
                   ),
                   Consumer<EntryList>(
@@ -92,12 +95,18 @@ class PuzzleScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   MaterialButton(
-                    child: Text("Solution"),
-                    onPressed: () {},
+                    child: Text(" Solution ",
+              style: Theme.of(context).textTheme.headline4,),
+                    onPressed: () {
+                      Provider.of<EntryList>(context,listen: false).setShow();
+                    },
                   ),
                   MaterialButton(
-                    child: Text("Next Level"),
-                    onPressed: () {},
+                    child: Text("Next Level",
+                      style: Theme.of(context).textTheme.headline4,),
+                    onPressed: () {
+                      Provider.of<DifficultyManage>(context,listen: false).incrementLevel();
+                    },
                   ),
                 ],
               ),

@@ -10,7 +10,8 @@ import 'package:provider/provider.dart'; // Provider
 
 void main() {
   runApp(
-    MyApp(), // Main App
+    MyApp(
+    ), // Main App
   );
 }
 
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         themeMode: ThemeMode.system,
         theme: themeManage.returnTheme(),
         darkTheme: ThemeData.dark(),

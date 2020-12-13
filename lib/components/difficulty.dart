@@ -32,7 +32,7 @@ class DifficultyManage extends ChangeNotifier {
     notifyListeners();
   } // Difficulty
 
-  void update(){
+  void update() {
     notifyListeners();
   }
 
@@ -51,5 +51,48 @@ class DifficultyManage extends ChangeNotifier {
   void setCurrentLevel(int x) {
     _currentLevel = x;
     notifyListeners();
+  }
+
+  void incrementLevel() {
+    if (_currentLevel == 4)
+      _currentLevel = 1;
+    else
+      _currentLevel += 1;
+    notifyListeners();
+  }
+
+  void gameDialog(BuildContext context) {
+    showDialog<AlertDialog>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          elevation: 10,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(40))),
+          title: Text('Completed Successfully', textAlign: TextAlign.center),
+          content: Container(
+            height: 150,
+            child: Center(
+              child: Icon(
+                Icons.library_add_check_sharp,
+                size: 200,
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'OK',
+                style: TextStyle(color: Colors.black54),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
